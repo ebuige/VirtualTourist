@@ -38,12 +38,29 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
+//        let dictionary = [
+//            "latitude" : self.mapView.region.center.latitude,
+//            "longitude" : self.mapView.region.center.longitude,
+//            "latitudeDelta" : self.mapView.region.span.latitudeDelta,
+//            "longitudeDelta" : self.mapView.region.span.longitudeDelta
+//        ]
+//        NSKeyedArchiver.archiveRootObject(dictionary, toFile: filePath)
+    }
+    
+    func saveMapRegion() {
+        
+        // Place the "center" and "span" of the map into a dictionary
+        // The "span" is the width and height of the map in degrees.
+        // It represents the zoom level of the map.
+        
         let dictionary = [
-            "latitude" : self.mapView.region.center.latitude,
-            "longitude" : self.mapView.region.center.longitude,
-            "latitudeDelta" : self.mapView.region.span.latitudeDelta,
-            "longitudeDelta" : self.mapView.region.span.longitudeDelta
+            "latitude" : mapView.region.center.latitude,
+            "longitude" : mapView.region.center.longitude,
+            "latitudeDelta" : mapView.region.span.latitudeDelta,
+            "longitudeDelta" : mapView.region.span.longitudeDelta
         ]
+        
+        // Archive the dictionary into the filePath
         NSKeyedArchiver.archiveRootObject(dictionary, toFile: filePath)
     }
     
@@ -57,6 +74,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             let span = MKCoordinateSpan(latitudeDelta: latitudeDelta, longitudeDelta: longitudeDelta)
             let savedRegion = MKCoordinateRegion(center: center, span: span)
             self.mapView.setRegion(savedRegion, animated: animated)
+            println("lat: \(latitude), lon: \(longitude), latD: \(latitudeDelta), lonD: \(longitudeDelta)")
         }
     }
     
@@ -191,3 +209,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
 }
 
+extension MapViewController : MKMapViewDelegate {
+    
+    func mapView(mapView: MKMapView!, regionDidChangeAnimated animated: Bool) {
+        saveMapRegion()
+    }
+}

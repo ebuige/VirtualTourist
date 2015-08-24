@@ -12,6 +12,7 @@ import MapKit
 
 class PhotosViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, MKMapViewDelegate, NSFetchedResultsControllerDelegate {
     
+    var tapRecognizer: UITapGestureRecognizer? = nil
     var insertedIndexPaths: [NSIndexPath]!
     var deletedIndexPaths: [NSIndexPath]!
     var updatedIndexPaths: [NSIndexPath]!
@@ -34,7 +35,7 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
     @IBOutlet weak var button: UIButton!
     
     @IBAction func backButtonTapped(sender: AnyObject) {
-        self.performSegueWithIdentifier("GoBack", sender: self)
+        self.performSegueWithIdentifier("BackToMap", sender: self)
     }
     @IBAction func buttonTapped(sender: AnyObject) {
         if selectedIndexes.isEmpty {
@@ -105,6 +106,10 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
         fetchedResultsController.delegate = self
         self.sharedSession = NSURLSession.sharedSession()
         self.button.backgroundColor = UIColor.whiteColor().colorWithAlphaComponent(0.8)
+        
+        /* Configure tap recognizer */
+        self.tapRecognizer = UITapGestureRecognizer(target: self, action: "handleSingleTap:")
+        self.tapRecognizer?.numberOfTapsRequired = 1
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -198,6 +203,7 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
         CoreDataStackManager.sharedInstance().saveContext()
     }
     
+  //  func handleSingleTap(recognizer: UITapGestureRecognizer) {
     func deleteSelectedPics() {
         var picsToDelete = [Photo]()
         for indexPath in self.selectedIndexes {

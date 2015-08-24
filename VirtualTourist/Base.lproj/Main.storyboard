@@ -78,6 +78,15 @@
                         <subviews>
                             <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EZu-tq-ZuP">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                                <items>
+                                    <navigationItem id="bu1-Hy-qqN">
+                                        <barButtonItem key="leftBarButtonItem" title="Back" id="Xkv-O6-xcp">
+                                            <connections>
+                                                <action selector="backButtonTapped:" destination="upb-JP-ykE" id="zDq-hN-zLw"/>
+                                            </connections>
+                                        </barButtonItem>
+                                    </navigationItem>
+                                </items>
                             </navigationBar>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="c5A-8W-aTr">
                                 <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
@@ -98,6 +107,12 @@
                                             <rect key="frame" x="0.0" y="0.0" width="114" height="108"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="JNR-k7-fsP">
+                                                    <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                                    <variation key="widthClass=compact" fixedFrame="YES">
+                                                        <rect key="frame" x="0.0" y="0.0" width="120" height="108"/>
+                                                    </variation>
+                                                </imageView>
                                                 <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="AHk-QY-jJk">
                                                     <rect key="frame" x="-10" y="-10" width="20" height="20"/>
                                                     <variation key="widthClass=compact" fixedFrame="YES">
@@ -106,32 +121,26 @@
                                                 </activityIndicatorView>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZOX-Ag-3pi">
                                                     <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                     <variation key="widthClass=compact" fixedFrame="YES">
                                                         <rect key="frame" x="0.0" y="0.0" width="114" height="108"/>
                                                     </variation>
                                                 </view>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="JNR-k7-fsP">
-                                                    <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
-                                                    <variation key="widthClass=compact" fixedFrame="YES">
-                                                        <rect key="frame" x="0.0" y="0.0" width="120" height="108"/>
-                                                    </variation>
-                                                </imageView>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
                                         <variation key="default">
                                             <mask key="subviews">
+                                                <exclude reference="JNR-k7-fsP"/>
                                                 <exclude reference="AHk-QY-jJk"/>
                                                 <exclude reference="ZOX-Ag-3pi"/>
-                                                <exclude reference="JNR-k7-fsP"/>
                                             </mask>
                                         </variation>
                                         <variation key="widthClass=compact">
                                             <mask key="subviews">
+                                                <include reference="JNR-k7-fsP"/>
                                                 <include reference="AHk-QY-jJk"/>
                                                 <include reference="ZOX-Ag-3pi"/>
-                                                <include reference="JNR-k7-fsP"/>
                                             </mask>
                                         </variation>
                                         <connections>
@@ -185,6 +194,13 @@
                                 <exclude reference="NIa-fJ-TLn"/>
                             </mask>
                             <mask key="constraints">
+                                <exclude reference="5K5-ie-Liu"/>
+                                <exclude reference="Hdy-RI-34r"/>
+                                <exclude reference="bTM-JD-Kyg"/>
+                                <exclude reference="gTK-qB-cqL"/>
+                                <exclude reference="1Tw-b7-fGA"/>
+                                <exclude reference="23k-bG-7Vv"/>
+                                <exclude reference="JuI-uG-FYt"/>
                                 <exclude reference="6mK-j8-yqG"/>
                                 <exclude reference="dWo-SZ-reM"/>
                                 <exclude reference="faj-Bn-hkv"/>
@@ -194,13 +210,6 @@
                                 <exclude reference="N8D-zl-Io6"/>
                                 <exclude reference="V0N-K9-lh4"/>
                                 <exclude reference="dDi-fc-hBT"/>
-                                <exclude reference="1Tw-b7-fGA"/>
-                                <exclude reference="23k-bG-7Vv"/>
-                                <exclude reference="JuI-uG-FYt"/>
-                                <exclude reference="5K5-ie-Liu"/>
-                                <exclude reference="Hdy-RI-34r"/>
-                                <exclude reference="bTM-JD-Kyg"/>
-                                <exclude reference="gTK-qB-cqL"/>
                             </mask>
                         </variation>
                         <variation key="widthClass=compact">
@@ -211,6 +220,13 @@
                                 <include reference="NIa-fJ-TLn"/>
                             </mask>
                             <mask key="constraints">
+                                <include reference="5K5-ie-Liu"/>
+                                <include reference="Hdy-RI-34r"/>
+                                <include reference="bTM-JD-Kyg"/>
+                                <include reference="gTK-qB-cqL"/>
+                                <include reference="1Tw-b7-fGA"/>
+                                <include reference="23k-bG-7Vv"/>
+                                <include reference="JuI-uG-FYt"/>
                                 <include reference="6mK-j8-yqG"/>
                                 <include reference="dWo-SZ-reM"/>
                                 <include reference="faj-Bn-hkv"/>
@@ -220,13 +236,6 @@
                                 <include reference="N8D-zl-Io6"/>
                                 <include reference="V0N-K9-lh4"/>
                                 <include reference="dDi-fc-hBT"/>
-                                <include reference="1Tw-b7-fGA"/>
-                                <include reference="23k-bG-7Vv"/>
-                                <include reference="JuI-uG-FYt"/>
-                                <include reference="5K5-ie-Liu"/>
-                                <include reference="Hdy-RI-34r"/>
-                                <include reference="bTM-JD-Kyg"/>
-                                <include reference="gTK-qB-cqL"/>
                             </mask>
                         </variation>
                     </view>
@@ -234,6 +243,7 @@
                         <outlet property="button" destination="NIa-fJ-TLn" id="DUi-V4-yA7"/>
                         <outlet property="collectionView" destination="5Qn-ox-vJR" id="sTw-2u-x0L"/>
                         <outlet property="mapView" destination="c5A-8W-aTr" id="uhV-mh-cn2"/>
+                        <segue destination="vXZ-lx-hvc" kind="show" identifier="BackToMap" id="UZQ-9t-In7"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qjH-M7-rnk" userLabel="First Responder" sceneMemberID="firstResponder"/>
