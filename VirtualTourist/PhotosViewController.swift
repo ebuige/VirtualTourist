@@ -29,16 +29,18 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
         return fetchedResultsController
         }()
     
+    @IBOutlet weak var noImageLabel: UILabel!
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet weak var noImageLabel: UITextField!
     @IBOutlet weak var button: UIButton!
     
-    @IBAction func backButtonTapped(sender: AnyObject) {
+    @IBAction func goBackToMap(sender: AnyObject) {
         self.performSegueWithIdentifier("BackToMap", sender: self)
     }
-    @IBAction func buttonTapped(sender: AnyObject) {
-        if selectedIndexes.isEmpty {
+    
+    
+    @IBAction func getNewCollection(sender: AnyObject) {
+  //      if selectedIndexes.isEmpty {
             self.button.hidden = true
             deleteAllPics()
             VTClient.sharedInstance.getImagesFromFlickr(self.destination) { success, dic, error in
@@ -46,17 +48,19 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
                     if success == true && dic != nil {
                         VTClient.sharedInstance.handleFlickr(success, dics: dic!, destination: self.destination) { completed in
                             self.updateBottomButton()
-                        }
-                    } else {
-                        self.noImageLabel.hidden = false
-                    }
+                            self.noImageLabel.text = ""
+                            println("image set")
+                       }
+   //                } else {
+                   }
                 }
             }
-        } else {
-            self.deleteSelectedPics()
-        }
+  //      } else {
+  //          self.deleteSelectedPics()
+  //      }
+
     }
-    
+            
     // NSFetchrResultsControllerDelegate
     
     func controllerWillChangeContent(controller: NSFetchedResultsController) {
@@ -176,6 +180,11 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let sectionInfo = self.fetchedResultsController.sections![section] as? NSFetchedResultsSectionInfo
+        if sectionInfo?.numberOfObjects == 0 {
+            println("numofobjects = 0")
+            self.noImageLabel.text = "No Images Found"
+            self.button.hidden = true
+        }
         return sectionInfo!.numberOfObjects
     }
     
@@ -187,7 +196,8 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
             self.selectedIndexes.append(indexPath)
         }
         self.configureCell(cell, atIndexPath: indexPath)
-        self.updateBottomButton()
+      //  self.updateBottomButton()
+        self.deleteSelectedPics()
     }
     
     // Functions related to deleting pics
@@ -222,13 +232,13 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     func updateBottomButton() {
         self.button.hidden = false
-        if self.selectedIndexes.count > 0 {
-            self.button.setTitle("Remove Selected Pics", forState: .Normal)
-            self.button.sizeToFit()
-        } else {
+//        if self.selectedIndexes.count > 0 {
+//            self.button.setTitle("Remove Selected Pics", forState: .Normal)
+//            self.button.sizeToFit()
+//        } else {
             self.button.setTitle("Get New Collection", forState: .Normal)
             self.button.sizeToFit()
-        }
+//        }
     }
     
 }

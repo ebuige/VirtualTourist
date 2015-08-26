@@ -82,7 +82,7 @@
                                     <navigationItem id="bu1-Hy-qqN">
                                         <barButtonItem key="leftBarButtonItem" title="Back" id="Xkv-O6-xcp">
                                             <connections>
-                                                <action selector="backButtonTapped:" destination="upb-JP-ykE" id="zDq-hN-zLw"/>
+                                                <action selector="goBackToMap:" destination="upb-JP-ykE" id="uyc-4D-Wux"/>
                                             </connections>
                                         </barButtonItem>
                                     </navigationItem>
@@ -91,6 +91,15 @@
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="c5A-8W-aTr">
                                 <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                             </mapView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NIa-fJ-TLn">
+                                <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                                <state key="normal" title="NEW COLLECTION">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="getNewCollection:" destination="upb-JP-ykE" eventType="touchUpInside" id="3qw-Q7-WnC"/>
+                                </connections>
+                            </button>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="5Qn-ox-vJR">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="N0t-BB-yT3">
@@ -155,15 +164,12 @@
                                     <outlet property="delegate" destination="upb-JP-ykE" id="fRw-Yk-Yjs"/>
                                 </connections>
                             </collectionView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NIa-fJ-TLn">
-                                <rect key="frame" x="-23" y="-15" width="46" height="30"/>
-                                <state key="normal" title="NEW COLLECTION">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="buttonTapped:" destination="upb-JP-ykE" eventType="touchUpInside" id="bPF-fj-si2"/>
-                                </connections>
-                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Yj1-S4-7hX">
+                                <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -171,11 +177,23 @@
                             <constraint firstAttribute="trailingMargin" secondItem="NIa-fJ-TLn" secondAttribute="trailing" constant="-16" id="23k-bG-7Vv"/>
                             <constraint firstItem="M0o-xh-xka" firstAttribute="top" secondItem="EZu-tq-ZuP" secondAttribute="bottom" constant="556" id="5K5-ie-Liu"/>
                             <constraint firstAttribute="trailingMargin" secondItem="EZu-tq-ZuP" secondAttribute="trailing" constant="-16" id="6mK-j8-yqG"/>
+                            <constraint firstItem="5Qn-ox-vJR" firstAttribute="top" secondItem="Yj1-S4-7hX" secondAttribute="bottom" constant="21" id="GhL-p6-X3M">
+                                <variation key="widthClass=compact" constant="8"/>
+                            </constraint>
                             <constraint firstItem="M0o-xh-xka" firstAttribute="top" secondItem="5Qn-ox-vJR" secondAttribute="bottom" constant="50" id="Hdy-RI-34r">
                                 <variation key="widthClass=compact" constant="44"/>
                             </constraint>
                             <constraint firstItem="NIa-fJ-TLn" firstAttribute="leading" secondItem="Bze-LP-bPY" secondAttribute="leadingMargin" constant="-16" id="JuI-uG-FYt"/>
+                            <constraint firstItem="Yj1-S4-7hX" firstAttribute="leading" secondItem="Bze-LP-bPY" secondAttribute="leadingMargin" constant="54" id="MSY-PT-2HV">
+                                <variation key="widthClass=compact" constant="55"/>
+                            </constraint>
                             <constraint firstItem="5Qn-ox-vJR" firstAttribute="top" secondItem="EZu-tq-ZuP" secondAttribute="bottom" constant="101" id="N8D-zl-Io6"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="Yj1-S4-7hX" secondAttribute="trailing" constant="75" id="O5b-c2-W5k">
+                                <variation key="widthClass=compact" constant="74"/>
+                            </constraint>
+                            <constraint firstItem="Yj1-S4-7hX" firstAttribute="top" secondItem="EZu-tq-ZuP" secondAttribute="bottom" constant="59" id="Pvj-bP-XyV">
+                                <variation key="widthClass=compact" constant="72"/>
+                            </constraint>
                             <constraint firstItem="c5A-8W-aTr" firstAttribute="leading" secondItem="Bze-LP-bPY" secondAttribute="leadingMargin" constant="-16" id="RAQ-bp-eOU"/>
                             <constraint firstItem="5Qn-ox-vJR" firstAttribute="leading" secondItem="Bze-LP-bPY" secondAttribute="leadingMargin" constant="-16" id="V0N-K9-lh4"/>
                             <constraint firstItem="M0o-xh-xka" firstAttribute="top" secondItem="NIa-fJ-TLn" secondAttribute="bottom" constant="6" id="bTM-JD-Kyg"/>
@@ -190,52 +208,62 @@
                             <mask key="subviews">
                                 <exclude reference="EZu-tq-ZuP"/>
                                 <exclude reference="c5A-8W-aTr"/>
-                                <exclude reference="5Qn-ox-vJR"/>
                                 <exclude reference="NIa-fJ-TLn"/>
+                                <exclude reference="5Qn-ox-vJR"/>
+                                <exclude reference="Yj1-S4-7hX"/>
                             </mask>
                             <mask key="constraints">
-                                <exclude reference="5K5-ie-Liu"/>
-                                <exclude reference="Hdy-RI-34r"/>
-                                <exclude reference="bTM-JD-Kyg"/>
-                                <exclude reference="gTK-qB-cqL"/>
-                                <exclude reference="1Tw-b7-fGA"/>
-                                <exclude reference="23k-bG-7Vv"/>
-                                <exclude reference="JuI-uG-FYt"/>
                                 <exclude reference="6mK-j8-yqG"/>
                                 <exclude reference="dWo-SZ-reM"/>
                                 <exclude reference="faj-Bn-hkv"/>
                                 <exclude reference="RAQ-bp-eOU"/>
                                 <exclude reference="lyA-TH-rRm"/>
                                 <exclude reference="xoW-gV-5Lj"/>
+                                <exclude reference="MSY-PT-2HV"/>
+                                <exclude reference="O5b-c2-W5k"/>
+                                <exclude reference="Pvj-bP-XyV"/>
+                                <exclude reference="GhL-p6-X3M"/>
                                 <exclude reference="N8D-zl-Io6"/>
                                 <exclude reference="V0N-K9-lh4"/>
                                 <exclude reference="dDi-fc-hBT"/>
+                                <exclude reference="1Tw-b7-fGA"/>
+                                <exclude reference="23k-bG-7Vv"/>
+                                <exclude reference="JuI-uG-FYt"/>
+                                <exclude reference="5K5-ie-Liu"/>
+                                <exclude reference="Hdy-RI-34r"/>
+                                <exclude reference="bTM-JD-Kyg"/>
+                                <exclude reference="gTK-qB-cqL"/>
                             </mask>
                         </variation>
                         <variation key="widthClass=compact">
                             <mask key="subviews">
                                 <include reference="EZu-tq-ZuP"/>
                                 <include reference="c5A-8W-aTr"/>
-                                <include reference="5Qn-ox-vJR"/>
                                 <include reference="NIa-fJ-TLn"/>
+                                <include reference="5Qn-ox-vJR"/>
+                                <include reference="Yj1-S4-7hX"/>
                             </mask>
                             <mask key="constraints">
-                                <include reference="5K5-ie-Liu"/>
-                                <include reference="Hdy-RI-34r"/>
-                                <include reference="bTM-JD-Kyg"/>
-                                <include reference="gTK-qB-cqL"/>
-                                <include reference="1Tw-b7-fGA"/>
-                                <include reference="23k-bG-7Vv"/>
-                                <include reference="JuI-uG-FYt"/>
                                 <include reference="6mK-j8-yqG"/>
                                 <include reference="dWo-SZ-reM"/>
                                 <include reference="faj-Bn-hkv"/>
                                 <include reference="RAQ-bp-eOU"/>
                                 <include reference="lyA-TH-rRm"/>
                                 <include reference="xoW-gV-5Lj"/>
+                                <include reference="MSY-PT-2HV"/>
+                                <include reference="O5b-c2-W5k"/>
+                                <include reference="Pvj-bP-XyV"/>
+                                <include reference="GhL-p6-X3M"/>
                                 <include reference="N8D-zl-Io6"/>
                                 <include reference="V0N-K9-lh4"/>
                                 <include reference="dDi-fc-hBT"/>
+                                <include reference="1Tw-b7-fGA"/>
+                                <include reference="23k-bG-7Vv"/>
+                                <include reference="JuI-uG-FYt"/>
+                                <include reference="5K5-ie-Liu"/>
+                                <include reference="Hdy-RI-34r"/>
+                                <include reference="bTM-JD-Kyg"/>
+                                <include reference="gTK-qB-cqL"/>
                             </mask>
                         </variation>
                     </view>
@@ -243,6 +271,7 @@
                         <outlet property="button" destination="NIa-fJ-TLn" id="DUi-V4-yA7"/>
                         <outlet property="collectionView" destination="5Qn-ox-vJR" id="sTw-2u-x0L"/>
                         <outlet property="mapView" destination="c5A-8W-aTr" id="uhV-mh-cn2"/>
+                        <outlet property="noImageLabel" destination="Yj1-S4-7hX" id="afF-2u-8ys"/>
                         <segue destination="vXZ-lx-hvc" kind="show" identifier="BackToMap" id="UZQ-9t-In7"/>
                     </connections>
                 </viewController>

@@ -10,7 +10,7 @@ import UIKit
 import CoreData
 import MapKit
 
-class MapViewController: UIViewController, MKMapViewDelegate {
+class MapViewController: UIViewController {
     
     @IBOutlet weak var mapView: MKMapView! { didSet { self.enableUserPin() } }
     var destination: Location?
@@ -38,13 +38,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
-//        let dictionary = [
-//            "latitude" : self.mapView.region.center.latitude,
-//            "longitude" : self.mapView.region.center.longitude,
-//            "latitudeDelta" : self.mapView.region.span.latitudeDelta,
-//            "longitudeDelta" : self.mapView.region.span.longitudeDelta
-//        ]
-//        NSKeyedArchiver.archiveRootObject(dictionary, toFile: filePath)
     }
     
     func saveMapRegion() {
@@ -78,18 +71,19 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
+    
     func fetchAllDestinations() -> [Location] {
         var error: NSError?
         let fetchRequest = NSFetchRequest(entityName: "Location")
         let results = sharedContext().executeFetchRequest(fetchRequest, error: &error)
         if error != nil {
-            self.displayAlertView("Sorry, error occured for some reason...")
+            self.displayAlertView("Sorry, an error occured fetching this data...")
         }
         return results as! [Location]
     }
     
     func displayAlertView(message: String) {
-        let alertController = UIAlertController(title: "Loading pictures Failed", message: message, preferredStyle: .Alert)
+        let alertController = UIAlertController(title: "Loading Locations Failed", message: message, preferredStyle: .Alert)
         let action = UIAlertAction(title: "OK", style: .Default) { (action) in
             self.dismissViewControllerAnimated(true, completion: nil)
         }
