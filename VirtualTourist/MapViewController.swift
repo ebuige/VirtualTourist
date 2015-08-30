@@ -174,15 +174,20 @@ class MapViewController: UIViewController {
                             dispatch_async(dispatch_get_main_queue()) {
                                 if success == true && dic != nil {
                                     VTClient.sharedInstance.handleFlickr(success, dics: dic!, destination: self.destination!) { completed in
+                                        println("perform segue 1")
                                         self.performSegueWithIdentifier("showPhotos", sender: self)
                                     }
                                 } else {
                                     self.noImage = true
+                                    self.performSegueWithIdentifier("showPhotos", sender: self)
+                                    println("no images found")
                                 }
                             }
                         }
                     }
-                    self.performSegueWithIdentifier("showPhotos", sender: self)
+                    println("perform segue 2")
+              //      self.performSegueWithIdentifier("showPhotos", sender: self)
+                  //  self.noImage = true
                 }
             }
         }
@@ -192,11 +197,14 @@ class MapViewController: UIViewController {
         if segue.identifier == "showPhotos" {
             let pvc = segue.destinationViewController as! PhotosViewController
             pvc.destination = self.destination
-            if self.noImage == true {
-                pvc.noImageLabel.hidden = false
-            }
             if self.destination?.pictures.count > 0 {
+                println("the value of BB")
                 pvc.shouldUpdateBottomButton = true
+            }
+            println("the value is \(self.noImage)")
+            if self.noImage {
+                println("bool set")
+                pvc.noImageFound = true
             }
         }
     }

@@ -19,6 +19,7 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     var selectedIndexes = [NSIndexPath]() // it keeps tracks of which item is selected to delete.
     var shouldUpdateBottomButton = false
+    var noImageFound = false
     var destination: Location!
     var sharedSession: NSURLSession?
     lazy var fetchedResultsController: NSFetchedResultsController = {
@@ -50,16 +51,18 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
                             self.updateBottomButton()
                             self.noImageLabel.text = ""
                             println("image set")
-                       }
-   //                } else {
-                   }
+                        }
+                    } else {
+                        self.noImageLabel.text = "no images found" }
+                    }
                 }
             }
   //      } else {
   //          self.deleteSelectedPics()
   //      }
 
-    }
+    
+
             
     // NSFetchrResultsControllerDelegate
     
@@ -110,10 +113,6 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
         fetchedResultsController.delegate = self
         self.sharedSession = NSURLSession.sharedSession()
         self.button.backgroundColor = UIColor.whiteColor().colorWithAlphaComponent(0.8)
-        
-        /* Configure tap recognizer */
-        self.tapRecognizer = UITapGestureRecognizer(target: self, action: "handleSingleTap:")
-        self.tapRecognizer?.numberOfTapsRequired = 1
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -122,6 +121,9 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
         mapView.showAnnotations([destination!.pin], animated: true)
         if self.shouldUpdateBottomButton {
             self.updateBottomButton()
+        }
+        if self.noImageFound {
+            self.noImageLabel.text = "no images found"
         }
     }
     
@@ -182,7 +184,7 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
         let sectionInfo = self.fetchedResultsController.sections![section] as? NSFetchedResultsSectionInfo
         if sectionInfo?.numberOfObjects == 0 {
             println("numofobjects = 0")
-            self.noImageLabel.text = "No Images Found"
+        //    self.noImageLabel.text = "No Images Found"
             self.button.hidden = true
         }
         return sectionInfo!.numberOfObjects
