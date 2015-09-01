@@ -23,10 +23,14 @@ class MapViewController: UIViewController {
         return url.URLByAppendingPathComponent("mapRegionArchive").path!
     }
     
+    // attempt to restore map - cannot get span to correctly reset
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.restoreMapRegion(false)
     }
+    
+    // retrieve all stored destinations and then place pins in all stored locations
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
@@ -46,6 +50,9 @@ class MapViewController: UIViewController {
         // The "span" is the width and height of the map in degrees.
         // It represents the zoom level of the map.
         
+        mapView.region.span.latitudeDelta = mapView.region.span.latitudeDelta * 0.99
+        mapView.region.span.longitudeDelta = mapView.region.span.longitudeDelta * 0.99
+        
         let dictionary = [
             "latitude" : mapView.region.center.latitude,
             "longitude" : mapView.region.center.longitude,
@@ -53,9 +60,12 @@ class MapViewController: UIViewController {
             "longitudeDelta" : mapView.region.span.longitudeDelta
         ]
         
+      //  println("latD: \(mapView.region.span.latitudeDelta), lonD: \(mapView.region.span.longitudeDelta)")
         // Archive the dictionary into the filePath
         NSKeyedArchiver.archiveRootObject(dictionary, toFile: filePath)
     }
+    
+    // retrieve stored map values and try to set the map region to the saved values .... this not working even though saved values are correct
     
     func restoreMapRegion(animated: Bool) {
         if let regionDictionary = NSKeyedUnarchiver.unarchiveObjectWithFile(filePath) as? [String : AnyObject] {
@@ -66,11 +76,12 @@ class MapViewController: UIViewController {
             let latitudeDelta = regionDictionary["longitudeDelta"] as! CLLocationDegrees
             let span = MKCoordinateSpan(latitudeDelta: latitudeDelta, longitudeDelta: longitudeDelta)
             let savedRegion = MKCoordinateRegion(center: center, span: span)
-            self.mapView.setRegion(savedRegion, animated: animated)
-            println("lat: \(latitude), lon: \(longitude), latD: \(latitudeDelta), lonD: \(longitudeDelta)")
+            mapView.setRegion(savedRegion, animated: animated)
+        //    println("lat: \(latitude), lon: \(longitude), latD: \(latitudeDelta), lonD: \(longitudeDelta)")
         }
     }
     
+    // fetch all stored map locations
     
     func fetchAllDestinations() -> [Location] {
         var error: NSError?
@@ -82,6 +93,8 @@ class MapViewController: UIViewController {
         return results as! [Location]
     }
     
+    // standard alert view controller 
+    
     func displayAlertView(message: String) {
         let alertController = UIAlertController(title: "Loading Locations Failed", message: message, preferredStyle: .Alert)
         let action = UIAlertAction(title: "OK", style: .Default) { (action) in
@@ -90,6 +103,8 @@ class MapViewController: UIViewController {
         alertController.addAction(action)
         self.presentViewController(alertController, animated: true, completion: nil)
     }
+    
+    // using the retrieved stored locations restore pins on map
     
     func mapAllThePlaces(places: [Location]) {
         var annotations = places.map() {
@@ -138,6 +153,8 @@ class MapViewController: UIViewController {
         self.mapView.addAnnotation(temporaryDestination.pin)
     }
     
+    // set destination in core data
+    
     func destinationSet(gestureRecognizer: UIGestureRecognizer) {
         self.mapView.removeAnnotations(self.mapView.annotations)
         let wayPoints = gestureRecognizer.locationInView(self.mapView)
@@ -169,24 +186,28 @@ class MapViewController: UIViewController {
             if destination.pin.coordinate.latitude == pinCoordinate.latitude {
                 if destination.pin.coordinate.longitude == pinCoordinate.longitude {
                     self.destination = destination
-                    if self.destination != destinations.last || self.picturesFetched == false {
-                        VTClient.sharedInstance.getImagesFromFlickr(self.destination!) { success, dic, error in
-                            dispatch_async(dispatch_get_main_queue()) {
-                                if success == true && dic != nil {
-                                    VTClient.sharedInstance.handleFlickr(success, dics: dic!, destination: self.destination!) { completed in
-                                        println("perform segue 1")
-                                        self.performSegueWithIdentifier("showPhotos", sender: self)
-                                    }
-                                } else {
-                                    self.noImage = true
-                                    self.performSegueWithIdentifier("showPhotos", sender: self)
-                                    println("no images found")
-                                }
-                            }
-                        }
-                    }
-                    println("perform segue 2")
-              //      self.performSegueWithIdentifier("showPhotos", sender: self)
+                    if self.destination!.pictures.isEmpty {
+             //       if self.destination != destinations.last || self.picturesFetched == false {
+             //           println("do not perform seque 2")
+             //           VTClient.sharedInstance.getImagesFromFlickr(self.destination!) { success, dic, error in
+             //               dispatch_async(dispatch_get_main_queue()) {
+             //                   if success == true && dic != nil {
+            //                        VTClient.sharedInstance.handleFlickr(success, dics: dic!, destination: self.destination!) { completed in
+            //                            println("perform segue 1")
+             //                           self.performSegueWithIdentifier("showPhotos", sender: self)
+            //                        }
+            //                    } else {
+            //                        self.noImage = true
+            //                        self.performSegueWithIdentifier("showPhotos", sender: self)
+            //                        println("no images found")
+            //                    }
+            //                }
+            //            }
+            //        }
+            //        println("perform segue 2")
+                        self.noImage = true }
+            //            self.performSegueWithIdentifier("showPhotos", sender: self)}
+                    self.performSegueWithIdentifier("showPhotos", sender: self)
                   //  self.noImage = true
                 }
             }
@@ -197,14 +218,10 @@ class MapViewController: UIViewController {
         if segue.identifier == "showPhotos" {
             let pvc = segue.destinationViewController as! PhotosViewController
             pvc.destination = self.destination
-            if self.destination?.pictures.count > 0 {
-                println("the value of BB")
-                pvc.shouldUpdateBottomButton = true
-            }
-            println("the value is \(self.noImage)")
+            pvc.UpdateNewCollectionButton = true
             if self.noImage {
-                println("bool set")
                 pvc.noImageFound = true
+                pvc.UpdateNewCollectionButton = false
             }
         }
     }

@@ -18,10 +18,79 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
     var updatedIndexPaths: [NSIndexPath]!
     
     var selectedIndexes = [NSIndexPath]() // it keeps tracks of which item is selected to delete.
-    var shouldUpdateBottomButton = false
+    var UpdateNewCollectionButton = true
     var noImageFound = false
     var destination: Location!
     var sharedSession: NSURLSession?
+    
+    
+    
+    @IBOutlet weak var noImageLabel: UILabel!
+    @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var button: UIButton!
+    
+    
+    // View life cycle
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        var error: NSError?
+        fetchedResultsController.performFetch(&error)
+        if let error = error {
+            abort()
+        }
+        fetchedResultsController.delegate = self
+        self.sharedSession = NSURLSession.sharedSession()
+        self.button.backgroundColor = UIColor.whiteColor().colorWithAlphaComponent(0.8)
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        mapView.addAnnotation(destination!.pin)
+        mapView.showAnnotations([destination!.pin], animated: true)
+        if self.UpdateNewCollectionButton {
+            self.updateNewCollectionButton()
+        }
+        if self.noImageFound {
+            self.noImageLabel.text = "no images found"
+        }
+    }
+    
+
+    
+    
+    
+    
+    @IBAction func goBackToMap(sender: AnyObject) {
+        self.performSegueWithIdentifier("BackToMap", sender: self)
+    }
+    
+    @IBAction func getNewCollection(sender: AnyObject) {
+            self.button.hidden = true
+            deleteAllPics()
+            VTClient.sharedInstance.getImagesFromFlickr(self.destination) { success, dic, error in
+                dispatch_async(dispatch_get_main_queue()) {
+                    if success == true && dic != nil {
+                        VTClient.sharedInstance.handleFlickr(success, dics: dic!, destination: self.destination) { completed in
+                            self.updateNewCollectionButton()
+                            self.noImageLabel.text = ""
+                        }
+                    } else {
+                        self.noImageLabel.text = "no images found" }
+                    }
+                }
+            }
+    
+    // MARK: - Core Data Convenience
+    
+    func sharedContext() -> NSManagedObjectContext {
+        return CoreDataStackManager.sharedInstance().managedObjectContext!
+    }
+
+    
+    // Mark: - Fetched Results Controller
+  
     lazy var fetchedResultsController: NSFetchedResultsController = {
         let fetchRequest = NSFetchRequest(entityName: "Photo")
         fetchRequest.sortDescriptors = []
@@ -29,42 +98,10 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.sharedContext(), sectionNameKeyPath: nil, cacheName: nil)
         return fetchedResultsController
         }()
-    
-    @IBOutlet weak var noImageLabel: UILabel!
-    @IBOutlet weak var mapView: MKMapView!
-    @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet weak var button: UIButton!
-    
-    @IBAction func goBackToMap(sender: AnyObject) {
-        self.performSegueWithIdentifier("BackToMap", sender: self)
-    }
-    
-    
-    @IBAction func getNewCollection(sender: AnyObject) {
-  //      if selectedIndexes.isEmpty {
-            self.button.hidden = true
-            deleteAllPics()
-            VTClient.sharedInstance.getImagesFromFlickr(self.destination) { success, dic, error in
-                dispatch_async(dispatch_get_main_queue()) {
-                    if success == true && dic != nil {
-                        VTClient.sharedInstance.handleFlickr(success, dics: dic!, destination: self.destination) { completed in
-                            self.updateBottomButton()
-                            self.noImageLabel.text = ""
-                            println("image set")
-                        }
-                    } else {
-                        self.noImageLabel.text = "no images found" }
-                    }
-                }
-            }
-  //      } else {
-  //          self.deleteSelectedPics()
-  //      }
-
-    
+   
 
             
-    // NSFetchrResultsControllerDelegate
+    // Fetched Results Controller Delegate
     
     func controllerWillChangeContent(controller: NSFetchedResultsController) {
         insertedIndexPaths = [NSIndexPath]()
@@ -101,35 +138,6 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
             }, completion: nil)
     }
     
-    // View life cycle
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        var error: NSError?
-        fetchedResultsController.performFetch(&error)
-        if let error = error {
-            abort()
-        }
-        fetchedResultsController.delegate = self
-        self.sharedSession = NSURLSession.sharedSession()
-        self.button.backgroundColor = UIColor.whiteColor().colorWithAlphaComponent(0.8)
-    }
-    
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
-        mapView.addAnnotation(destination!.pin)
-        mapView.showAnnotations([destination!.pin], animated: true)
-        if self.shouldUpdateBottomButton {
-            self.updateBottomButton()
-        }
-        if self.noImageFound {
-            self.noImageLabel.text = "no images found"
-        }
-    }
-    
-    func sharedContext() -> NSManagedObjectContext {
-        return CoreDataStackManager.sharedInstance().managedObjectContext!
-    }
     
     // collectionView
     
@@ -141,9 +149,10 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
         let pic = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
         if pic.image != nil {
             cell.imageView.image = pic.image
-            if cell.activityIndicator.isAnimating() {
+   //         if cell.activityIndicator.isAnimating() {
                 cell.activityIndicator.stopAnimating()
-            }
+           //     cell.activityIndicator.hidden = true
+   //         }
         } else {
             let imgURL = NSURL(string: pic.imageUrlString!)
             let request: NSURLRequest = NSURLRequest(URL: imgURL!)
@@ -153,17 +162,19 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
                     ImageHandler.sharedImageHandler.storeImage(image!, identifier: pic.id!)
                     dispatch_async(dispatch_get_main_queue()) {
                         cell.imageView.image = image
-                        if cell.activityIndicator.isAnimating() {
+              //          if cell.activityIndicator.isAnimating() {
                             cell.activityIndicator.stopAnimating()
-                        }
+              //              cell.activityIndicator.hidden = true
+                      //  }
                     }
                 }
             }
             task!.resume()
         }
-        if cell.activityIndicator.isAnimating() {
+    //    if cell.activityIndicator.isAnimating() {
            cell.activityIndicator.stopAnimating()
-        }
+           cell.activityIndicator.hidden = true
+     //   }
         if let index = find(self.selectedIndexes, indexPath) {
             cell.view.backgroundColor = UIColor.lightGrayColor().colorWithAlphaComponent(0.5)
             cell.view.hidden = false
@@ -175,6 +186,8 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PhotoCell", forIndexPath: indexPath) as! PhotoCell
         cell.backgroundColor = UIColor.grayColor()
+        cell.activityIndicator.hidden = false
+        println("start animating")
         cell.activityIndicator.startAnimating()
         self.configureCell(cell, atIndexPath: indexPath)
         return cell
@@ -183,8 +196,6 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let sectionInfo = self.fetchedResultsController.sections![section] as? NSFetchedResultsSectionInfo
         if sectionInfo?.numberOfObjects == 0 {
-            println("numofobjects = 0")
-        //    self.noImageLabel.text = "No Images Found"
             self.button.hidden = true
         }
         return sectionInfo!.numberOfObjects
@@ -198,7 +209,6 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
             self.selectedIndexes.append(indexPath)
         }
         self.configureCell(cell, atIndexPath: indexPath)
-      //  self.updateBottomButton()
         self.deleteSelectedPics()
     }
     
@@ -215,7 +225,6 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
         CoreDataStackManager.sharedInstance().saveContext()
     }
     
-  //  func handleSingleTap(recognizer: UITapGestureRecognizer) {
     func deleteSelectedPics() {
         var picsToDelete = [Photo]()
         for indexPath in self.selectedIndexes {
@@ -232,15 +241,10 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
         CoreDataStackManager.sharedInstance().saveContext()
     }
     
-    func updateBottomButton() {
+    func updateNewCollectionButton() {
         self.button.hidden = false
-//        if self.selectedIndexes.count > 0 {
-//            self.button.setTitle("Remove Selected Pics", forState: .Normal)
-//            self.button.sizeToFit()
-//        } else {
-            self.button.setTitle("Get New Collection", forState: .Normal)
-            self.button.sizeToFit()
-//        }
+      //  self.button.setTitle("Get New Collection", forState: .Normal)
+        self.button.sizeToFit()
     }
     
 }

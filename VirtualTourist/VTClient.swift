@@ -19,6 +19,8 @@ class VTClient: NSObject {
     }
     
     func getImagesFromFlickr(destination: Location, completionHandler: ((success: Bool, dics: [[String: String]]?, error: NSError?) -> Void)) {
+        
+        println("flicker client") 
         let methodArguments = [
             VTClient.Keys.METHOD: VTClient.Constants.METHOD,
             VTClient.Keys.API_KEY: VTClient.Constants.API_KEY,
