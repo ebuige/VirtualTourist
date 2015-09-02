@@ -23,6 +23,7 @@ class MapViewController: UIViewController {
         return url.URLByAppendingPathComponent("mapRegionArchive").path!
     }
     
+    // View life cycle
     // attempt to restore map - cannot get span to correctly reset
     
     override func viewDidLoad() {

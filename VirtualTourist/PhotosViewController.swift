@@ -144,11 +144,11 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
     func configureCell(cell: PhotoCell, atIndexPath indexPath: NSIndexPath) {
         let pic = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
         if pic.image != nil {
-            cell.imageView.image = pic.image
-   //         if cell.activityIndicator.isAnimating() {
+            if cell.activityIndicator.isAnimating() {
                 cell.activityIndicator.stopAnimating()
-           //     cell.activityIndicator.hidden = true
-   //         }
+                cell.activityIndicator.hidden = true
+            }
+            cell.imageView.image = pic.image
         } else {
             let imgURL = NSURL(string: pic.imageUrlString!)
             let request: NSURLRequest = NSURLRequest(URL: imgURL!)
@@ -157,27 +157,22 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
                     let image = UIImage(data: data)
                     ImageHandler.sharedImageHandler.storeImage(image!, identifier: pic.id!)
                     dispatch_async(dispatch_get_main_queue()) {
-                        cell.imageView.image = image
-              //          if cell.activityIndicator.isAnimating() {
+                        if cell.activityIndicator.isAnimating() {
                             cell.activityIndicator.stopAnimating()
-              //              cell.activityIndicator.hidden = true
-                      //  }
+                            cell.activityIndicator.hidden = true
+                        }
+                        cell.imageView.image = image
                     }
                 }
             }
             task!.resume()
         }
-    //    if cell.activityIndicator.isAnimating() {
-           cell.activityIndicator.stopAnimating()
-           cell.activityIndicator.hidden = true
-     //   }
-      }
+    }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PhotoCell", forIndexPath: indexPath) as! PhotoCell
         cell.backgroundColor = UIColor.grayColor()
         cell.activityIndicator.hidden = false
-    //    println("start animating")
         cell.activityIndicator.startAnimating()
         self.configureCell(cell, atIndexPath: indexPath)
         return cell
@@ -215,7 +210,7 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
         CoreDataStackManager.sharedInstance().saveContext()
     }
     
-    // Deletes single photo when user taps on it
+    // Deletes single photo when called after user taps on it
     
     func deleteSelectedPhoto() {
         var photoToDelete = [Photo]()
