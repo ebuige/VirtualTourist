@@ -16,7 +16,7 @@ class MapViewController: UIViewController {
     var destination: Location?
     var destinations = [Location]()
     var noImage = false
-    var picturesFetched = false
+    var photosFetched = false
     var filePath : String {
         let manager = NSFileManager.defaultManager()
         let url = manager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first as! NSURL
@@ -88,12 +88,12 @@ class MapViewController: UIViewController {
         let fetchRequest = NSFetchRequest(entityName: "Location")
         let results = sharedContext().executeFetchRequest(fetchRequest, error: &error)
         if error != nil {
-            self.displayAlertView("Sorry, an error occured fetching this data...")
+            self.displayAlertView("An error occured fetching this data...")
         }
         return results as! [Location]
     }
     
-    // standard alert view controller 
+    // standard alert view controllers
     
     func displayAlertView(message: String) {
         let alertController = UIAlertController(title: "Loading Locations Failed", message: message, preferredStyle: .Alert)
@@ -104,6 +104,15 @@ class MapViewController: UIViewController {
         self.presentViewController(alertController, animated: true, completion: nil)
     }
     
+    func displayAlertView1(message: String) {
+        let alertController = UIAlertController(title: "Flickr Search Failed", message: message, preferredStyle: .Alert)
+        let action = UIAlertAction(title: "OK", style: .Default) { (action) in
+            self.dismissViewControllerAnimated(true, completion: nil)
+        }
+        alertController.addAction(action)
+        self.presentViewController(alertController, animated: true, completion: nil)
+    }
+
     // using the retrieved stored locations restore pins on map
     
     func mapAllThePlaces(places: [Location]) {
@@ -166,19 +175,25 @@ class MapViewController: UIViewController {
         self.fetchPictures(self.destinations.last!)
     }
     
+    // call flickr api and get photos for dropped pin 
+    
     func fetchPictures(destination: Location) {
-        if self.destination!.pictures.isEmpty {
-            VTClient.sharedInstance.getImagesFromFlickr(self.destination!) { success, dic, error in
+  //      if self.destination!.pictures.isEmpty {
+            VTClient.sharedInstance.getImagesFromFlickr(self.destination!) { success, pics, error in
                 dispatch_async(dispatch_get_main_queue()) {
-                    if success == true && dic != nil {
-                        VTClient.sharedInstance.handleFlickr(success, dics: dic!, destination: self.destination!) { completed in self.picturesFetched = true }
+                    if success == true && pics != nil {
+                        VTClient.sharedInstance.handleFlickr(success, pics: pics!, destination: self.destination!) { completed in self.photosFetched = true }
+                    } else {
+                        self.displayAlertView1("An error occured calling the flickr API, Please try again later...")
                     }
                 }
             }
-        } else {
-            self.noImage = true
-        }
+     //   } else {
+     //       self.noImage = true
+     //   }
     }
+    
+    // When pin is selected set destination and segue to photo view controller
     
     func mapView(mapView: MKMapView!, didSelectAnnotationView view: MKAnnotationView!) {
         let pinCoordinate = view.annotation.coordinate
@@ -187,28 +202,9 @@ class MapViewController: UIViewController {
                 if destination.pin.coordinate.longitude == pinCoordinate.longitude {
                     self.destination = destination
                     if self.destination!.pictures.isEmpty {
-             //       if self.destination != destinations.last || self.picturesFetched == false {
-             //           println("do not perform seque 2")
-             //           VTClient.sharedInstance.getImagesFromFlickr(self.destination!) { success, dic, error in
-             //               dispatch_async(dispatch_get_main_queue()) {
-             //                   if success == true && dic != nil {
-            //                        VTClient.sharedInstance.handleFlickr(success, dics: dic!, destination: self.destination!) { completed in
-            //                            println("perform segue 1")
-             //                           self.performSegueWithIdentifier("showPhotos", sender: self)
-            //                        }
-            //                    } else {
-            //                        self.noImage = true
-            //                        self.performSegueWithIdentifier("showPhotos", sender: self)
-            //                        println("no images found")
-            //                    }
-            //                }
-            //            }
-            //        }
-            //        println("perform segue 2")
-                        self.noImage = true }
-            //            self.performSegueWithIdentifier("showPhotos", sender: self)}
+                        self.noImage = true
+                    }
                     self.performSegueWithIdentifier("showPhotos", sender: self)
-                  //  self.noImage = true
                 }
             }
         }
@@ -227,6 +223,8 @@ class MapViewController: UIViewController {
     }
     
 }
+
+// Mapview delegate function saves map region when map change is detected
 
 extension MapViewController : MKMapViewDelegate {
     

@@ -20,11 +20,11 @@ class Photo: NSManagedObject {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
     }
     
-    init(dic: [String: String], context: NSManagedObjectContext) {
+    init(pic: [String: String], context: NSManagedObjectContext) {
         let entity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: context)
         super.init(entity: entity!, insertIntoManagedObjectContext: context)
-        self.imageUrlString = dic["imageUrlString"]
-        self.id = dic["id"]
+        self.imageUrlString = pic["imageUrlString"]
+        self.id = pic["id"]
     }
     
     var image: UIImage? {

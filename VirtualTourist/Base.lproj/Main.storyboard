@@ -128,13 +128,6 @@
                                                         <rect key="frame" x="50" y="44" width="20" height="20"/>
                                                     </variation>
                                                 </activityIndicatorView>
-                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZOX-Ag-3pi">
-                                                    <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                    <variation key="widthClass=compact" fixedFrame="YES">
-                                                        <rect key="frame" x="0.0" y="0.0" width="114" height="108"/>
-                                                    </variation>
-                                                </view>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
@@ -142,20 +135,17 @@
                                             <mask key="subviews">
                                                 <exclude reference="JNR-k7-fsP"/>
                                                 <exclude reference="AHk-QY-jJk"/>
-                                                <exclude reference="ZOX-Ag-3pi"/>
                                             </mask>
                                         </variation>
                                         <variation key="widthClass=compact">
                                             <mask key="subviews">
                                                 <include reference="JNR-k7-fsP"/>
                                                 <include reference="AHk-QY-jJk"/>
-                                                <include reference="ZOX-Ag-3pi"/>
                                             </mask>
                                         </variation>
                                         <connections>
                                             <outlet property="activityIndicator" destination="AHk-QY-jJk" id="Qqc-cp-1kj"/>
                                             <outlet property="imageView" destination="JNR-k7-fsP" id="cEI-nv-8vV"/>
-                                            <outlet property="view" destination="ZOX-Ag-3pi" id="Sad-2L-eCf"/>
                                         </connections>
                                     </collectionViewCell>
                                 </cells>

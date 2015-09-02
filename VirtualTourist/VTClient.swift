@@ -18,7 +18,7 @@ class VTClient: NSObject {
         session = NSURLSession.sharedSession()
     }
     
-    func getImagesFromFlickr(destination: Location, completionHandler: ((success: Bool, dics: [[String: String]]?, error: NSError?) -> Void)) {
+    func getImagesFromFlickr(destination: Location, completionHandler: ((success: Bool, pics: [[String: String]]?, error: NSError?) -> Void)) {
         
         println("flicker client") 
         let methodArguments = [
@@ -31,19 +31,13 @@ class VTClient: NSObject {
             VTClient.Keys.FORMAT: VTClient.Constants.FORMAT,
             VTClient.Keys.NO_JSON_CALLBACK: VTClient.Constants.NO_JSON_CALLBACK,
         ]
-        var dics = [[String: String]]()
+        var pics = [[String: String]]()
         let urlString = VTClient.Constants.BaseURL + escapedParameters(methodArguments)
         let url = NSURL(string: urlString)
         let request = NSMutableURLRequest(URL: url!)
-        request.HTTPMethod = "POST"
-        let task = session.dataTaskWithRequest(request) { data, response, downloadingError in
-            if let res = response as? NSHTTPURLResponse {
-                if res.statusCode != 200 {
-                    completionHandler(success: false, dics: nil, error: downloadingError)
-                }
-            }
-            if downloadingError != nil {
-                completionHandler(success: false, dics: nil, error: downloadingError)
+        let task = session.dataTaskWithRequest(request) { data, response, downloadError in
+            if let apiError = downloadError {
+                completionHandler(success: false, pics: nil, error: downloadError)
             } else {
                 var error: NSError?
                 let parsedResult = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &error) as! [String: AnyObject]
@@ -53,12 +47,10 @@ class VTClient: NSObject {
                         for item in photoDictionary {
                             let imageUrlString = item["url_m"] as! String
                             let id = item["id"] as! String
-                            let dic = ["imageUrlString": imageUrlString, "id": id]
-                            dics.append(dic)
+                            let pic = ["imageUrlString": imageUrlString, "id": id]
+                            pics.append(pic)
                         }
-                        completionHandler(success: true, dics: dics, error: nil)
-                    } else {
-                        completionHandler(success: false, dics: nil, error: nil)
+                        completionHandler(success: true, pics: pics, error: nil)
                     }
                 }
             }
@@ -67,9 +59,9 @@ class VTClient: NSObject {
         
     }
     
-    func handleFlickr(success: Bool, dics: [[String: String]], destination: Location,  completionHandler: ( Bool -> Void )) {
-        for item in dics {
-            let picture = Photo(dic: item, context: CoreDataStackManager.sharedInstance().managedObjectContext!)
+    func handleFlickr(success: Bool, pics: [[String: String]], destination: Location,  completionHandler: ( Bool -> Void )) {
+        for item in pics {
+            let picture = Photo(pic: item, context: CoreDataStackManager.sharedInstance().managedObjectContext!)
             picture.destination = destination
         }
         CoreDataStackManager.sharedInstance().saveContext()

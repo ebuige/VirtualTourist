@@ -12,17 +12,14 @@ import MapKit
 
 class PhotosViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, MKMapViewDelegate, NSFetchedResultsControllerDelegate {
     
-    var tapRecognizer: UITapGestureRecognizer? = nil
     var insertedIndexPaths: [NSIndexPath]!
     var deletedIndexPaths: [NSIndexPath]!
     var updatedIndexPaths: [NSIndexPath]!
-    
-    var selectedIndexes = [NSIndexPath]() // it keeps tracks of which item is selected to delete.
-    var UpdateNewCollectionButton = true
-    var noImageFound = false
+    var selectedIndexes = [NSIndexPath]()
     var destination: Location!
     var sharedSession: NSURLSession?
-    
+    var UpdateNewCollectionButton = true
+    var noImageFound = false
     
     
     @IBOutlet weak var noImageLabel: UILabel!
@@ -42,7 +39,6 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
         }
         fetchedResultsController.delegate = self
         self.sharedSession = NSURLSession.sharedSession()
-        self.button.backgroundColor = UIColor.whiteColor().colorWithAlphaComponent(0.8)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -68,11 +64,11 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     @IBAction func getNewCollection(sender: AnyObject) {
             self.button.hidden = true
-            deleteAllPics()
-            VTClient.sharedInstance.getImagesFromFlickr(self.destination) { success, dic, error in
+            deleteAllPhotos()
+            VTClient.sharedInstance.getImagesFromFlickr(self.destination) { success, pic, error in
                 dispatch_async(dispatch_get_main_queue()) {
-                    if success == true && dic != nil {
-                        VTClient.sharedInstance.handleFlickr(success, dics: dic!, destination: self.destination) { completed in
+                    if success == true && pic != nil {
+                        VTClient.sharedInstance.handleFlickr(success, pics: pic!, destination: self.destination) { completed in
                             self.updateNewCollectionButton()
                             self.noImageLabel.text = ""
                         }
@@ -175,19 +171,13 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
            cell.activityIndicator.stopAnimating()
            cell.activityIndicator.hidden = true
      //   }
-        if let index = find(self.selectedIndexes, indexPath) {
-            cell.view.backgroundColor = UIColor.lightGrayColor().colorWithAlphaComponent(0.5)
-            cell.view.hidden = false
-        } else {
-            cell.view.hidden = true
-        }
-    }
+      }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PhotoCell", forIndexPath: indexPath) as! PhotoCell
         cell.backgroundColor = UIColor.grayColor()
         cell.activityIndicator.hidden = false
-        println("start animating")
+    //    println("start animating")
         cell.activityIndicator.startAnimating()
         self.configureCell(cell, atIndexPath: indexPath)
         return cell
@@ -209,33 +199,35 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
             self.selectedIndexes.append(indexPath)
         }
         self.configureCell(cell, atIndexPath: indexPath)
-        self.deleteSelectedPics()
+        self.deleteSelectedPhoto()
     }
     
-    // Functions related to deleting pics
+    // Deletes all photos in current collection when called
     
-    func deleteAllPics() {
-        for pic in fetchedResultsController.fetchedObjects as! [Photo] {
-            pic.destination = nil
-            if pic.image != nil {
-                ImageHandler.sharedImageHandler.deleteImage(pic.image!, withIdentifier: pic.id!)
+    func deleteAllPhotos() {
+        for photos in fetchedResultsController.fetchedObjects as! [Photo] {
+            photos.destination = nil
+            if photos.image != nil {
+                ImageHandler.sharedImageHandler.deleteImage(photos.image!, withIdentifier: photos.id!)
             }
-            self.sharedContext().deleteObject(pic)
+            self.sharedContext().deleteObject(photos)
         }
         CoreDataStackManager.sharedInstance().saveContext()
     }
     
-    func deleteSelectedPics() {
-        var picsToDelete = [Photo]()
+    // Deletes single photo when user taps on it
+    
+    func deleteSelectedPhoto() {
+        var photoToDelete = [Photo]()
         for indexPath in self.selectedIndexes {
-            picsToDelete.append(fetchedResultsController.objectAtIndexPath(indexPath) as! Photo)
+            photoToDelete.append(fetchedResultsController.objectAtIndexPath(indexPath) as! Photo)
         }
-        for pic in picsToDelete {
-            pic.destination = nil
-            if pic.image != nil {
-                ImageHandler.sharedImageHandler.deleteImage(pic.image!, withIdentifier: pic.id!)
+        for photo in photoToDelete {
+            photo.destination = nil
+            if photo.image != nil {
+                ImageHandler.sharedImageHandler.deleteImage(photo.image!, withIdentifier: photo.id!)
             }
-            self.sharedContext().deleteObject(pic)
+            self.sharedContext().deleteObject(photo)
         }
         selectedIndexes = [NSIndexPath]()
         CoreDataStackManager.sharedInstance().saveContext()
@@ -243,7 +235,6 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     func updateNewCollectionButton() {
         self.button.hidden = false
-      //  self.button.setTitle("Get New Collection", forState: .Normal)
         self.button.sizeToFit()
     }
     
